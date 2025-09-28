@@ -2,6 +2,8 @@ import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Stack } from "tamagui";
 
+const CONTAINER_PADDING = 10;
+
 export default function GothamSafeContainer({
   children,
 }: React.PropsWithChildren) {
@@ -9,10 +11,10 @@ export default function GothamSafeContainer({
 
   return (
     <Stack
-      pt={insets.top}
-      pb={insets.bottom}
-      pl={insets.left}
-      pr={insets.right}
+      pt={insets.top + CONTAINER_PADDING}
+      pb={insets.bottom + CONTAINER_PADDING}
+      pl={insets.left + CONTAINER_PADDING}
+      pr={insets.right + CONTAINER_PADDING}
       flex={1}
     >
       {children}

@@ -1,7 +1,7 @@
 import { supabase } from "@/features/shared/libs/supabase";
 import React, { useState } from "react";
-import { Alert, View } from "react-native";
-import { Button, Input } from "tamagui";
+import { Alert } from "react-native";
+import { Button, Input, SizableText, YStack } from "tamagui";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -36,35 +36,32 @@ export default function Login() {
   }
 
   return (
-    <View>
-      <View>
-        <Input
-          placeholder="Email"
-          onChangeText={(text) => setEmail(text)}
-          value={email}
-          autoCapitalize={"none"}
-          keyboardType="email-address"
-        />
-      </View>
-      <View>
-        <Input
-          placeholder="Password"
-          onChangeText={(text) => setPassword(text)}
-          value={password}
-          secureTextEntry={true}
-          autoCapitalize={"none"}
-        />
-      </View>
-      <View>
-        <Button disabled={loading} onPress={() => signInWithEmail()}>
-          Log in
-        </Button>
-      </View>
-      <View>
-        <Button disabled={loading} onPress={() => signUpWithEmail()}>
-          Sign up
-        </Button>
-      </View>
-    </View>
+    <YStack gap="$4">
+      <SizableText size="$8">Access to Meow!</SizableText>
+      <Input
+        placeholder="Email"
+        onChangeText={(text) => setEmail(text)}
+        value={email}
+        autoCapitalize={"none"}
+        keyboardType="email-address"
+      />
+      <Input
+        placeholder="Password"
+        onChangeText={(text) => setPassword(text)}
+        value={password}
+        secureTextEntry={true}
+        autoCapitalize={"none"}
+      />
+      <Button
+        theme="green"
+        disabled={loading}
+        onPress={() => signInWithEmail()}
+      >
+        Log in
+      </Button>
+      <Button disabled={loading} onPress={() => signUpWithEmail()}>
+        Sign up
+      </Button>
+    </YStack>
   );
 }
