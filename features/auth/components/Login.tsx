@@ -1,23 +1,45 @@
+import SignInWithEmailUseCase from "@/features/auth/application/useCases/SignInWithEmail.useCase";
+import { loginValidationSchema } from "@/features/auth/application/validations/login";
+import SupabaseAuthRepository from "@/features/auth/infrastructure/repositories/SupabaseAuthRepository";
 import GothamField from "@/features/shared/components/Gotham/GothamField";
 import { Formik } from "formik";
 import React, { useState } from "react";
-import { Button, SizableText, View, YStack } from "tamagui";
+import { Alert } from "react-native";
+import { Button, SizableText, YStack } from "tamagui";
+
+interface LoginFormProps {
+  email: string;
+  password: string;
+}
+
+const loginInitialValues = {
+  email: "",
+  password: "",
+};
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // async function signInWithEmail() {
-  //   setLoading(true);
-  //   const { error } = await supabase.auth.signInWithPassword({
-  //     email: email,
-  //     password: password,
-  //   });
+  const signInWithEmail = async (values: LoginFormProps) => {
+    setLoading(true);
 
-  //   if (error) Alert.alert(error.message);
-  //   setLoading(false);
-  // }
+    try {
+      const supabaseAuthRepository = new SupabaseAuthRepository();
+      const signInWithEmailUseCase = new SignInWithEmailUseCase(
+        supabaseAuthRepository
+      );
+
+      const { email, password } = values;
+
+      await signInWithEmailUseCase.execute(email, password);
+    } catch (err: any) {
+      const error: Error = err;
+
+      Alert.alert(error.message);
+    }
+
+    setLoading(false);
+  };
 
   // async function signUpWithEmail() {
   //   setLoading(true);
@@ -35,55 +57,36 @@ export default function Login() {
   //   setLoading(false);
   // }
 
-  const handleOnSubmit = (values: any) => {
-    console.log(values);
-  };
-
   return (
     <YStack gap="$4">
       <SizableText size="$8">Access to Meow!</SizableText>
-      <Formik initialValues={{ email: "" }} onSubmit={handleOnSubmit}>
-        {({ handleChange, handleBlur, handleSubmit, values }) => (
-          <View>
+      <Formik
+        initialValues={loginInitialValues}
+        onSubmit={signInWithEmail}
+        validationSchema={loginValidationSchema}
+      >
+        {({ handleSubmit }) => (
+          <YStack>
             <GothamField
               type="email"
               name="email"
-              handleBlur={handleBlur}
-              handleChange={handleChange}
-              value={values.email}
+              label="Email"
+              placeholder="example@email.com"
             />
-            {/* <Input
-              inputMode="email"
-              onChange={() => handleChange(name)}
-              onBlur={() => handleBlur(name)}
-              value={values.email}
-            /> */}
-            <Button onPress={handleSubmit}>Submit</Button>
-          </View>
+            <GothamField
+              type="text"
+              name="password"
+              label="Password"
+              placeholder="Enter your password"
+              secureText
+            />
+            <Button mt="$4" onPress={() => handleSubmit()}>
+              Log in
+            </Button>
+          </YStack>
         )}
       </Formik>
-      {/* <Input
-        placeholder="Email"
-        onChangeText={(text) => setEmail(text)}
-        value={email}
-        autoCapitalize={"none"}
-        keyboardType="email-address"
-      />
-      <Input
-        placeholder="Password"
-        onChangeText={(text) => setPassword(text)}
-        value={password}
-        secureTextEntry={true}
-        autoCapitalize={"none"}
-      />
-      <Button
-        theme="green"
-        disabled={loading}
-        onPress={() => signInWithEmail()}
-      >
-        Log in
-      </Button>
-      <Button disabled={loading} onPress={() => signUpWithEmail()}>
+      {/* <Button disabled={loading} onPress={() => signUpWithEmail()}>
         Sign up
       </Button> */}
     </YStack>
